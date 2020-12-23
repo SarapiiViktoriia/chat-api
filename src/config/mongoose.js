@@ -1,13 +1,13 @@
 const mongoose = require('mongoose')
 const env = require('dotenv').config()
-mongoose.connect(`${process.env.DB_CONNECTION}:
+const conn = mongoose.connect(`${process.env.DB_CONNECTION}:
+    "auth": process.env.DB_AUTH,
+    "user": process.env.DB_USERNAME,
+    "pass": process.env.DB_PASSWORD,
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: false 
+    useFindAndModify: false,
+}, (err) => {
+    if (err) throw err;
+    console.log("DB Connected Successfully");
 });
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-if (!db)
-    console.log("Error connecting db")
-else
-    console.log("Db connected successfully")

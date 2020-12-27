@@ -5,7 +5,7 @@ const app = express()
 const port = 6969
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
-app.get('/', (req, res) => res.send('Hello World with Express'));
+app.get('/', (req, res) => res.send('Hello World with Express'))
 const userRouter = require('./routes/User')(app)
 app.use(express.json())
 app.listen(port, () => {

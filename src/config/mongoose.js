@@ -3,7 +3,7 @@ const env = require('dotenv').config()
 mongoose.connect(
   `${process.env.DB_CONNECTION}:
   {
-    auth: process.env.DB_AUTH,
+    auth: { "authSource": "admin" },
     user: process.env.DB_USERNAME,
     pass: process.env.DB_PASSWORD,
     useNewUrlParser: true,

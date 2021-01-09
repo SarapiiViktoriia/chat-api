@@ -30,3 +30,6 @@ exports.users = async (req, res) => {
     res.status(500).send()
   }
 }
+exports.show = async(req, res)=>{
+  res.send(req.user)
+}

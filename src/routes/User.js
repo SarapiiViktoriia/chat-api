@@ -14,5 +14,10 @@ module.exports = app => {
   app.post('/api/user/login', userController.login)
   app.get('/api/user/me', auth, userController.show)
   app.get('/api/users', auth, userController.users)
-  app.post('/api/user/me/avatar', auth,upload.single('avatar'), userController.upload)
+  app.post(
+    '/api/user/me/avatar',
+    auth,
+    upload.single('avatar'),
+    userController.upload
+  )
 }

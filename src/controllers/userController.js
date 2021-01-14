@@ -36,7 +36,6 @@ exports.upload = async (req, res) => {
   req.user.avatar = req.file.buffer
   await req.user.save()
   res.send({ message: 'berhasil di upload' })
-},
-  (error, req, res) => {
+},(error, req, res) => {
     res.status(400).send({ error: error.message })
   }

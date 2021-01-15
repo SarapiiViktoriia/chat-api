@@ -32,10 +32,11 @@ exports.users = async (req, res) => {
 exports.show = async (req, res) => {
   res.send(req.user)
 }
-exports.upload = async (req, res) => {
+;(exports.upload = async (req, res) => {
   req.user.avatar = req.file.buffer
   await req.user.save()
   res.send({ message: 'berhasil di upload' })
-},(error, req, res) => {
+}),
+  (error, req, res) => {
     res.status(400).send({ error: error.message })
   }

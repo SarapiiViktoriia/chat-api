@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 )
 userSchema.plugin(timeZone, { paths: ['timestamps'] })
 userSchema.methods.generateAuthToken = async function() {

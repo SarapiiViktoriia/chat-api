@@ -13,5 +13,5 @@ mongoose.connect(
   err => {
     if (err) throw err
     console.log('DB Connected Successfully')
-  }
+  },
 )

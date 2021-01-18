@@ -18,6 +18,6 @@ module.exports = app => {
     '/api/user/me/avatar',
     auth,
     upload.single('avatar'),
-    userController.upload
+    userController.upload,
   )
 }

@@ -10,10 +10,11 @@ const upload = multer({
 })
 module.exports = app => {
   const userController = require('../controllers/userController')
-  app.post('/api/user/register', userController.register)
-  app.post('/api/user/login', userController.login)
-  app.get('/api/user/me', auth, userController.show)
-  app.get('/api/users', auth, userController.users)
+  app.post('/api/users/register', userController.register)
+  app.post('/api/users/login', userController.login)
+  app.get('/api/users/me', auth, userController.show)
+  app.put('/api/users/:id', auth, userController.update)
+  app.get('/api/users', auth, userController.index)
   app.post(
     '/api/user/me/avatar',
     auth,

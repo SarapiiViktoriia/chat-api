@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema(
   },
 )
 userSchema.plugin(timeZone, { paths: ['timestamps'] })
-userSchema.methods.generateAuthToken = async function () {
+userSchema.methods.generateAuthToken = async function() {
   const user = this
   const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET)
   return token
@@ -60,7 +60,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
   }
   return user
 }
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function(next) {
   const user = this
   user.token = await user.generateAuthToken()
   if (user.isModified('password')) {
@@ -68,7 +68,7 @@ userSchema.pre('save', async function (next) {
   }
   next()
 })
-userSchema.pre('remove', async function (next) {
+userSchema.pre('remove', async function(next) {
   const user = this
   await Task.deleteMany({ owner: user._id })
   next()

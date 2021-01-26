@@ -1,5 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const router = express.Router()
 require('./config/mongoose')
 const app = express()
 const port = 6969

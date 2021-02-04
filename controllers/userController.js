@@ -18,7 +18,7 @@ exports.login = async (req, res) => {
     await User.findByIdAndUpdate(
       user._id,
       { $set: { token: tokenData } },
-      function(err) {},
+      function (err) { },
     )
   } catch (e) {
     res.status(422).send({
@@ -56,16 +56,25 @@ exports.show = async (req, res) => {
   res.send(req.user)
 }
 exports.update = async (req, res) => {
-  await User.findByIdAndUpdate(req.params.id, { $set: req.body }, function(
+  await User.findByIdAndUpdate(req.params.id, { $set: req.body }, function (
     err,
   ) {
     if (res.status == 500) {
       console.log(err)
-      res.send({ Message: 'Failed to Update Data!' })
+      res.send({ message: 'Failed to Update Data!' })
     } else {
       res.status(201).send({ Message: 'Data Updated!' })
     }
   })
+}
+exports.showImage = async (req, res) => {
+  await User.findOne({ "avatar": req.params.avatar }), function (err) {
+    if (res.status == 500 || res.status == 404) {
+      res.send({ message: 'Failed to load avatar!', code: res.status })
+    } else {
+      res.status(200).send({ message: 'avatar is great!' })
+    }
+  }
 }
 exports.uploadAvatar = async (req, res) => {
   const diskStorageToUploads = multer.diskStorage({
@@ -77,7 +86,7 @@ exports.uploadAvatar = async (req, res) => {
       )
     },
   })
-  let fileFilter = function(req, file, cb) {
+  let fileFilter = function (req, file, cb) {
     var allowedMimes = ['image/jpeg', 'image/pjpeg', 'image/png']
     if (allowedMimes.includes(file.mimetype)) {
       cb(null, true)
@@ -99,7 +108,7 @@ exports.uploadAvatar = async (req, res) => {
     fileFilter: fileFilter,
   })
   const upload = saveToUploads.single('avatar')
-  upload(req, res, function(error) {
+  upload(req, res, function (error) {
     if (error) {
       res.status(500)
       if (error.code == 'LIMIT_FILE_SIZE') {
@@ -116,7 +125,7 @@ exports.uploadAvatar = async (req, res) => {
       User.findByIdAndUpdate(
         req.params.id,
         { $set: { avatar: req.file.filename } },
-        function(err) {
+        function (err) {
           if (res.status == 500) {
             console.log(err)
             res.send({ Message: 'Failed to Update Data!' })

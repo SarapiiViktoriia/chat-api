@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",
-    "format": "prettier --config .prettierrc --write src/**/*.js"
+    "format": "prettier --config .prettierrc --write */*.js"
   },
   "keywords": [
     "sockets.io",

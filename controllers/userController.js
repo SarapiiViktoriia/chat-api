@@ -18,7 +18,7 @@ exports.login = async (req, res) => {
     await User.findByIdAndUpdate(
       user._id,
       { $set: { token: tokenData } },
-      function (err) { },
+      function(err) {},
     )
   } catch (e) {
     res.status(422).send({
@@ -56,7 +56,7 @@ exports.show = async (req, res) => {
   res.send(req.user)
 }
 exports.update = async (req, res) => {
-  await User.findByIdAndUpdate(req.params.id, { $set: req.body }, function (
+  await User.findByIdAndUpdate(req.params.id, { $set: req.body }, function(
     err,
   ) {
     if (res.status == 500) {
@@ -68,17 +68,18 @@ exports.update = async (req, res) => {
   })
 }
 exports.showImage = async (req, res) => {
-  await User.findOne({ "avatar": req.params.avatar }), function (err) {
-    if (res.status == 500 || res.status == 404) {
-      res.send({ message: 'Failed to load avatar!', code: res.status })
-    } else {
-      res.status(200).send({ message: 'avatar is great!' })
+  await User.findOne({ avatar: req.params.avatar }),
+    function(err) {
+      if (res.status == 500 || res.status == 404) {
+        res.send({ message: 'Failed to load avatar!', code: res.status })
+      } else {
+        res.status(200).send({ message: 'avatar is great!' })
+      }
     }
-  }
 }
 exports.uploadAvatar = async (req, res) => {
   const diskStorageToUploads = multer.diskStorage({
-    destination: path.join('./uploads/avatar'),
+    destination: path.join('./public/uploads/avatar'),
     filename: (req, file, cb) => {
       cb(
         null,
@@ -86,7 +87,7 @@ exports.uploadAvatar = async (req, res) => {
       )
     },
   })
-  let fileFilter = function (req, file, cb) {
+  let fileFilter = function(req, file, cb) {
     var allowedMimes = ['image/jpeg', 'image/pjpeg', 'image/png']
     if (allowedMimes.includes(file.mimetype)) {
       cb(null, true)
@@ -108,7 +109,7 @@ exports.uploadAvatar = async (req, res) => {
     fileFilter: fileFilter,
   })
   const upload = saveToUploads.single('avatar')
-  upload(req, res, function (error) {
+  upload(req, res, function(error) {
     if (error) {
       res.status(500)
       if (error.code == 'LIMIT_FILE_SIZE') {
@@ -122,10 +123,11 @@ exports.uploadAvatar = async (req, res) => {
         res.status(500)
         res.json('File not found')
       }
+      const fileName = req.protocol + ':
       User.findByIdAndUpdate(
         req.params.id,
-        { $set: { avatar: req.file.filename } },
-        function (err) {
+        { $set: { avatar: fileName } },
+        function(err) {
           if (res.status == 500) {
             console.log(err)
             res.send({ Message: 'Failed to Update Data!' })
@@ -133,7 +135,7 @@ exports.uploadAvatar = async (req, res) => {
             res.status(201).send({
               success: true,
               message: 'File uploaded successfully!',
-              avatar: req.file.filename,
+              avatar: fileName,
             })
           }
         },

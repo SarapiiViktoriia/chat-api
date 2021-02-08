@@ -123,7 +123,12 @@ exports.uploadAvatar = async (req, res) => {
         res.status(500)
         res.json('File not found')
       }
-      const fileName = req.protocol + ':
+      const fileName =
+        req.protocol +
+        ':
+        req.get('host') +
+        '/uploads/avatar/' +
+        req.file.filename
       User.findByIdAndUpdate(
         req.params.id,
         { $set: { avatar: fileName } },

@@ -4,8 +4,8 @@
   "description": "rest-api-for-chatApps",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js",
-    "socket": "nodemon socket.js",
+    "start": "nodemon server.js",
+    "websocket": "nodemon server.js",
     "format": "prettier --config .prettierrc --write */*.js"
   },
   "keywords": [

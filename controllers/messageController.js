@@ -1,8 +1,15 @@
 const Message = require('../models/messageModel')
-const multer = require('multer')
-const path = require('path')
+exports.sendMessage = async (req, res) => {
+  var message = new Message(req.body);
+  message.save((err) => {
+    if (err)
+      sendStatus(500)
+    global.io.emit('message', req.body)
+    res.sendStatus(200)
+  })
+}
 exports.fetchMessage = async (req, res) => {
-    Message.find().exec(function (err, results) {
-        res.send(results)
-    })
+  Message.find({}, (err, messages) => {
+    res.send(messages)
+  })
 }

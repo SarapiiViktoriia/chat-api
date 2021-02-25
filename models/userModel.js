@@ -3,18 +3,22 @@ const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const timeZone = require('mongoose-timezone')
+const uniqueValidator = require('mongoose-unique-validator');
 const userSchema = new mongoose.Schema(
   {
-    name: {
+    username: {
       type: String,
       required: true,
+      unique: true,
+      lowercase: true,
       trim: true,
     },
     email: {
       type: String,
       required: true,
-      trim: true,
+      unique: true,
       lowercase: true,
+      trim: true,
       validate(value) {
         if (!validator.isEmail(value)) {
           throw new Error('email is invalid')
@@ -27,8 +31,9 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
       trim: true,
     },
-    token: {
+    name: {
       type: String,
+      trim: true,
     },
     bio: {
       type: String,
@@ -44,8 +49,8 @@ const userSchema = new mongoose.Schema(
     versionKey: false,
   },
 )
-userSchema.plugin(timeZone, { paths: ['timestamps'] })
-userSchema.methods.generateAuthToken = async function() {
+userSchema.plugin(timeZone, { paths: ['timestamps'] }, uniqueValidator)
+userSchema.methods.generateAuthToken = async function () {
   const user = this
   const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET)
   return token
@@ -53,25 +58,19 @@ userSchema.methods.generateAuthToken = async function() {
 userSchema.statics.findByCredentials = async (email, password) => {
   const user = await User.findOne({ email })
   if (!user) {
-    throw new Error('Gagal Login')
+    throw new Error('Login failed!')
   }
   const isMatch = await bcrypt.compare(password, user.password)
   if (!isMatch) {
-    throw new Error('Gagal Login')
+    throw new Error('Login failed!')
   }
   return user
 }
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   const user = this
-  user.token = await user.generateAuthToken()
   if (user.isModified('password')) {
-    user.password = await bcrypt.hash(user.password, 8)
+    user.password = await bcrypt.hash(user.password, 6)
   }
-  next()
-})
-userSchema.pre('remove', async function(next) {
-  const user = this
-  await Task.deleteMany({ owner: user._id })
   next()
 })
 const User = mongoose.model('User', userSchema)

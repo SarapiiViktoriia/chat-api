@@ -3,77 +3,57 @@ const multer = require('multer')
 const path = require('path')
 exports.register = async (req, res) => {
   const user = new User(req.body)
+  const token = await user.generateAuthToken()
   try {
     await user.save()
-    res.status(201).send({ user })
+    res.status(201).send({ status: res.statusCode, success: true, messages: "New user created!", token: token })
   } catch (e) {
-    res.status(400).send({ msg: 'error!' })
+    res.status(400).send({ status: res.statusCode, success: false, messages: e })
     console.log(e)
   }
 }
 exports.login = async (req, res) => {
   try {
     const user = await User.findByCredentials(req.body.email, req.body.password)
-    const tokenData = await user.generateAuthToken()
-    await User.findByIdAndUpdate(
-      user._id,
-      { $set: { token: tokenData } },
-      function (err) { },
-    )
+    const token = await user.generateAuthToken()
+    res.status(200).send({ status: res.statusCode, success: true, messages: "Auth successfully!", token: token })
   } catch (e) {
     res.status(422).send({
-      message: 'Login Gagal',
+      status: res.statusCode,
+      success: false,
+      message: 'Cannot find the credentials',
     })
-    console.log(e)
-  }
-  try {
-    const users = await User.findOne({ email: req.body.email })
-    res.status(200).send({ users })
-  } catch (e) {
-    res.status(500).send(e)
-    console.log(e)
-  }
-}
-exports.logout = async (req, res) => {
-  try {
-    req.user.tokens = null
-    await req.user.save()
-    res.send({ message: 'Logout berhasil' })
-  } catch (e) {
-    console.log(e)
-    res.status(500).send({ message: 'Logout Gagal' })
   }
 }
 exports.index = async (req, res) => {
   try {
     const user = await User.find({})
-    res.status(200).send({ user })
+    res.status(200).send({ status: res.statusCode, success: true, messages: "Success load data!", user })
   } catch (e) {
-    res.status(500).send()
+    res.status(500).send({ status: res.statusCode, success: false, messages: "Server error!", e })
   }
 }
 exports.show = async (req, res) => {
-  res.send(req.user)
+  res.send({ status: res.statusCode, success: true, messages: "Success load data!", user: req.user })
 }
 exports.update = async (req, res) => {
   await User.findByIdAndUpdate(req.params.id, { $set: req.body }, function (
     err,
   ) {
-    if (res.status == 500) {
-      console.log(err)
-      res.send({ message: 'Failed to Update Data!' })
+    if (err) {
+      res.send({ status: res.statusCode, success: false, messages: 'Failed to update data!', err })
     } else {
-      res.status(201).send({ Message: 'Data Updated!' })
+      res.status(201).send({ status: res.statusCode, success: true, messages: 'Data Updated!', data: req.body })
     }
   })
 }
-exports.showImage = async (req, res) => {
+exports.getImage = async (req, res) => {
   await User.findOne({ avatar: req.params.avatar }),
     function (err) {
       if (res.status == 500 || res.status == 404) {
-        res.send({ message: 'Failed to load avatar!', code: res.status })
+        res.send({ status: res.status, message: 'Failed to load avatar!' })
       } else {
-        res.status(200).send({ message: 'avatar is great!' })
+        res.status(200).send({ status: res.status, message: 'avatar is great!', data: user.avatar })
       }
     }
 }
@@ -83,7 +63,7 @@ exports.uploadAvatar = async (req, res) => {
     filename: (req, file, cb) => {
       cb(
         null,
-        file.fieldname + '-' + req.params.id + path.extname(file.originalname),
+        file.fieldname + '-' + req.user._id + path.extname(file.originalname),
       )
     },
   })
@@ -94,6 +74,7 @@ exports.uploadAvatar = async (req, res) => {
     } else {
       cb(
         {
+          status: res.statusCode,
           success: false,
           message: 'Invalid file type. Only jpg, png image files are allowed.',
         },
@@ -113,8 +94,8 @@ exports.uploadAvatar = async (req, res) => {
     if (error) {
       res.status(500)
       if (error.code == 'LIMIT_FILE_SIZE') {
-        error.message = 'File Size is too large. Allowed file size is 2 MB'
         error.success = false
+        error.message = 'File Size is too large. Allowed file size is 2 MB'
       }
       console.log(error)
       return res.json(error)
@@ -130,7 +111,7 @@ exports.uploadAvatar = async (req, res) => {
         '/uploads/avatar/' +
         req.file.filename
       User.findByIdAndUpdate(
-        req.params.id,
+        req.user._id,
         { $set: { avatar: fileName } },
         function (err) {
           if (res.status == 500) {
@@ -138,8 +119,9 @@ exports.uploadAvatar = async (req, res) => {
             res.send({ Message: 'Failed to Update Data!' })
           } else {
             res.status(201).send({
+              status: res.statusCode,
               success: true,
-              message: 'File uploaded successfully!',
+              message: 'Image uploaded successfully!',
               avatar: fileName,
             })
           }

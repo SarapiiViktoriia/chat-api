@@ -6,9 +6,16 @@ exports.register = async (req, res) => {
   const token = await user.generateAuthToken()
   try {
     await user.save()
-    res.status(201).send({ status: res.statusCode, success: true, messages: "New user created!", token: token })
+    res.status(201).send({
+      status: res.statusCode,
+      success: true,
+      messages: 'New user created!',
+      token: token,
+    })
   } catch (e) {
-    res.status(400).send({ status: res.statusCode, success: false, messages: e })
+    res
+      .status(400)
+      .send({ status: res.statusCode, success: false, messages: e })
     console.log(e)
   }
 }
@@ -16,7 +23,12 @@ exports.login = async (req, res) => {
   try {
     const user = await User.findByCredentials(req.body.email, req.body.password)
     const token = await user.generateAuthToken()
-    res.status(200).send({ status: res.statusCode, success: true, messages: "Auth successfully!", token: token })
+    res.status(200).send({
+      status: res.statusCode,
+      success: true,
+      messages: 'Auth successfully!',
+      token: token,
+    })
   } catch (e) {
     res.status(422).send({
       status: res.statusCode,
@@ -28,34 +40,80 @@ exports.login = async (req, res) => {
 exports.index = async (req, res) => {
   try {
     const user = await User.find({})
-    res.status(200).send({ status: res.statusCode, success: true, messages: "Success load data!", user })
+    res.status(200).send({
+      status: res.statusCode,
+      success: true,
+      messages: 'Success load data!',
+      user,
+    })
   } catch (e) {
-    res.status(500).send({ status: res.statusCode, success: false, messages: "Server error!", e })
+    res.status(500).send({
+      status: res.statusCode,
+      success: false,
+      messages: 'Server error!',
+      e,
+    })
   }
 }
 exports.show = async (req, res) => {
-  res.send({ status: res.statusCode, success: true, messages: "Success load data!", user: req.user })
+  res.send({
+    status: res.statusCode,
+    success: true,
+    messages: 'Success load data!',
+    user: req.user,
+  })
 }
 exports.update = async (req, res) => {
-  await User.findByIdAndUpdate(req.params.id, { $set: req.body }, function (
+  await User.findByIdAndUpdate(req.params.id, { $set: req.body }, function(
     err,
   ) {
     if (err) {
-      res.send({ status: res.statusCode, success: false, messages: 'Failed to update data!', err })
+      res.send({
+        status: res.statusCode,
+        success: false,
+        messages: 'Failed to update data!',
+        err,
+      })
     } else {
-      res.status(201).send({ status: res.statusCode, success: true, messages: 'Data Updated!', data: req.body })
+      res.status(201).send({
+        status: res.statusCode,
+        success: true,
+        messages: 'Data Updated!',
+        data: req.body,
+      })
     }
   })
 }
-exports.getImage = async (req, res) => {
-  await User.findOne({ avatar: req.params.avatar }),
-    function (err) {
-      if (res.status == 500 || res.status == 404) {
-        res.send({ status: res.status, message: 'Failed to load avatar!' })
-      } else {
-        res.status(200).send({ status: res.status, message: 'avatar is great!', data: user.avatar })
-      }
+exports.getUser = async (req, res) => {
+  const username = req.body.username
+  const findUser = await User.findOne({ username })
+  try {
+    if (findUser) {
+      res.status(200).send({
+        status: res.statusCode,
+        success: true,
+        messages: 'User find!',
+        user: {
+          _id: findUser._id,
+          username: findUser.username,
+          avatar: findUser.avatar,
+        },
+      })
+    } else {
+      res.status(200).send({
+        status: res.statusCode,
+        success: true,
+        messages: 'User not found!',
+        user: findUser,
+      })
     }
+  } catch (e) {
+    res.status(500).send({
+      status: res.statusCode,
+      success: false,
+      messages: 'Server Error!',
+    })
+  }
 }
 exports.uploadAvatar = async (req, res) => {
   const diskStorageToUploads = multer.diskStorage({
@@ -67,7 +125,7 @@ exports.uploadAvatar = async (req, res) => {
       )
     },
   })
-  let fileFilter = function (req, file, cb) {
+  let fileFilter = function(req, file, cb) {
     var allowedMimes = ['image/jpeg', 'image/pjpeg', 'image/png']
     if (allowedMimes.includes(file.mimetype)) {
       cb(null, true)
@@ -90,7 +148,7 @@ exports.uploadAvatar = async (req, res) => {
     fileFilter: fileFilter,
   })
   const upload = saveToUploads.single('avatar')
-  upload(req, res, function (error) {
+  upload(req, res, function(error) {
     if (error) {
       res.status(500)
       if (error.code == 'LIMIT_FILE_SIZE') {
@@ -113,7 +171,7 @@ exports.uploadAvatar = async (req, res) => {
       User.findByIdAndUpdate(
         req.user._id,
         { $set: { avatar: fileName } },
-        function (err) {
+        function(err) {
           if (res.status == 500) {
             console.log(err)
             res.send({ Message: 'Failed to Update Data!' })

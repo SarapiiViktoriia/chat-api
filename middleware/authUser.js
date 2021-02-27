@@ -14,7 +14,7 @@ const authUser = async (req, res, next) => {
   } catch (error) {
     res.status(401).send({
       status: res.statusCode,
-      messages: 'Authorization Failed!, Token is Not Valid'
+      messages: 'Authorization Failed!, Token is Not Valid',
     })
   }
 }

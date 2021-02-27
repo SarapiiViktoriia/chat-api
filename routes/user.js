@@ -7,4 +7,5 @@ module.exports = app => {
   app.get('/api/users/me', authUser, userController.show)
   app.put('/api/users/:id', authUser, userController.update)
   app.post('/api/users/me/avatar', authUser, userController.uploadAvatar)
+  app.post('/api/users/find', authUser, userController.getUser)
 }

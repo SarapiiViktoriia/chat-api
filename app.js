@@ -8,7 +8,6 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(express.static(__dirname + '/public'))
 const userRouter = require('./routes/user')(app)
-const roomChatRouter = require('./routes/roomChat')(app)
 const port = 6969
 app.listen(port, () => {
   console.log(`Server is running in ${port}`)

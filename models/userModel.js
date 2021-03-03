@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const timeZone = require('mongoose-timezone')
 const uniqueValidator = require('mongoose-unique-validator')
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 const userSchema = new Schema(
   {
     username: {
@@ -46,7 +46,7 @@ const userSchema = new Schema(
     },
     contacts: {
       type: Array,
-      default: []
+      default: [],
     },
   },
   {
@@ -55,7 +55,7 @@ const userSchema = new Schema(
   },
 )
 userSchema.plugin(timeZone, { paths: ['timestamps'] }, uniqueValidator)
-userSchema.methods.generateAuthToken = async function () {
+userSchema.methods.generateAuthToken = async function() {
   const user = this
   const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET)
   return token
@@ -71,7 +71,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
   }
   return user
 }
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function(next) {
   const user = this
   if (user.isModified('password')) {
     user.password = await bcrypt.hash(user.password, 6)

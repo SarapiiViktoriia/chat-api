@@ -1,13 +1,13 @@
-const express = require('express')
-const cors = require('cors')
-const app = express()
 const mongoose = require('./config/mongoose')
+const cors = require('cors')
 const bodyParser = require('body-parser')
+const express = require('express')
+  , app = express()
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(express.static(__dirname + '/public'))
-const userRouter = require('./routes/user')(app)
+app.use('/api/users', require('./routes/user'))
 const port = 6969
 app.listen(port, () => {
   console.log(`Server is running in ${port}`)

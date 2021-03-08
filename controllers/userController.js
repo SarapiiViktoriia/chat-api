@@ -62,11 +62,15 @@ exports.show = async (req, res) => {
     status: res.statusCode,
     success: true,
     messages: 'Success load data!',
-    user: { _id: req.user._id, username: req.user.username, avatar: req.user.avatar },
+    user: {
+      _id: req.user._id,
+      username: req.user.username,
+      avatar: req.user.avatar,
+    },
   })
 }
 exports.update = async (req, res) => {
-  await User.findByIdAndUpdate(req.params.id, { $set: req.body }, function (
+  await User.findByIdAndUpdate(req.params.id, { $set: req.body }, function(
     err,
   ) {
     if (err) {
@@ -156,7 +160,7 @@ exports.uploadAvatar = async (req, res) => {
       )
     },
   })
-  let fileFilter = function (req, file, cb) {
+  let fileFilter = function(req, file, cb) {
     var allowedMimes = ['image/jpeg', 'image/pjpeg', 'image/png']
     if (allowedMimes.includes(file.mimetype)) {
       cb(null, true)
@@ -179,7 +183,7 @@ exports.uploadAvatar = async (req, res) => {
     fileFilter: fileFilter,
   })
   const upload = saveToUploads.single('avatar')
-  upload(req, res, function (error) {
+  upload(req, res, function(error) {
     if (error) {
       res.status(500)
       if (error.code == 'LIMIT_FILE_SIZE') {
@@ -202,7 +206,7 @@ exports.uploadAvatar = async (req, res) => {
       User.findByIdAndUpdate(
         req.user._id,
         { $set: { avatar: fileName } },
-        function (err) {
+        function(err) {
           if (res.status == 500) {
             console.log(err)
             res.send({ Message: 'Failed to Update Data!' })

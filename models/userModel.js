@@ -43,11 +43,18 @@ const userSchema = new Schema(
     avatar: {
       type: String,
       trim: true,
+      default: null,
     },
     contacts: {
       type: Array,
       default: [],
     },
+    conversations: [
+      {
+          type: Schema.Types.ObjectId,
+          ref: "Conversation"
+      }
+  ]
   },
   {
     timestamps: true,

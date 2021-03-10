@@ -126,7 +126,7 @@ exports.indexContact = async (req, res) => {
     status: res.statusCode,
     success: true,
     messages: 'Success load data!',
-    cntacts: req.user.contacts,
+    contacts: req.user.contacts,
   })
 }
 exports.storeContact = async (req, res) => {

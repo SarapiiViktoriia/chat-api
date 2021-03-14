@@ -35,7 +35,8 @@ exports.login = async (req, res) => {
     res.status(422).send({
       status: res.statusCode,
       success: false,
-      message: 'Cannot find the credentials',
+      messages: 'Cannot find the credentials',
+      e,
     })
   }
 }

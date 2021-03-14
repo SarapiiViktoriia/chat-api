@@ -11,12 +11,6 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(express.static(__dirname + '/public'))
 const messageRouter = require('./routes/message')(app)
-app.get('/', function (req, res, next) {
-    res.sendFile(__dirname + '/public/views/login.html');
-})
-app.get('/home', function (req, res, next) {
-    res.sendFile(__dirname + '/public/views/index.html');
-})
 io.on('connection', (socket) => {
     socket.on('newMessage', (msg) => {
         io.emit('newMessage', msg);

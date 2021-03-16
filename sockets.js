@@ -12,13 +12,10 @@ app.use(bodyParser.json())
 app.use(express.static(__dirname + '/public'))
 const messageRouter = require('./routes/message')(app)
 io.on('connection', (socket) => {
-    socket.on('newMessage', (msg) => {
-        io.emit('newMessage', msg);
-        console.log('newChat : ' + msg);
-    })
-    socket.on('disconnect', (msg) => {
+    console.log('a user connected');
+    socket.on('disconnect', function () {
         console.log('user disconnected');
-    })
+    });
 })
 const port = 3001
 server.listen(port, () => {

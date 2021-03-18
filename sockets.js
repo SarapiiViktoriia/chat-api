@@ -13,6 +13,9 @@ app.use(express.static(__dirname + '/public'))
 const messageRouter = require('./routes/message')(app)
 io.on('connection', (socket) => {
     console.log('a user connected');
+    socket.on('add user', (username) => {
+        console.log(username);
+    });
     socket.on('disconnect', function () {
         console.log('user disconnected');
     });

@@ -5,4 +5,5 @@ const express = require('express'),
   app = express.Router()
 app.post('/store', authUser, conversationController.store)
 app.get('/', authUser, conversationController.index)
+app.get('/:id', authUser, conversationController.show)
 module.exports = app

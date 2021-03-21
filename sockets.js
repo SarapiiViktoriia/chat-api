@@ -2,6 +2,7 @@ const mongoose = require('./config/mongoose')
 var express = require('express');
 var bodyParser = require('body-parser')
 var cors = require('cors')
+var path = require('path')
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
@@ -11,13 +12,26 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(express.static(__dirname + '/public'))
 const messageRouter = require('./routes/message')(app)
+app.get('/home', (req, res) => {
+    res.sendFile(path.join(__dirname + '/public/views/index.html'))
+})
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname + '/public/views/login.html'))
+})
+app.get('/chat/:id', (req, res) => {
+    res.sendFile(path.join(__dirname + '/public/views/chat.html'))
+})
 io.on('connection', (socket) => {
-    console.log('a user connected');
-    socket.on('add user', (username) => {
-        console.log(username);
+    console.log(`Socket ${socket.id} connected.`);
+    socket.on('userJoined', (user) => {
+        io.emit('userJoined', user);
     });
-    socket.on('disconnect', function () {
-        console.log('user disconnected');
+    socket.on('newMessage', (msg, user) => {
+        io.emit('newMessage', msg);
+        console.log('newChat : ' +  msg);
+    })
+    socket.on('disconnect', () => {
+        console.log(`Socket ${socket.id} disconnected.`);
     });
 })
 const port = 3001

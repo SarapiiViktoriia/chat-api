@@ -5,13 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="../assets/css/output.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <script type="text/javascript" charset="utf8"
-        src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="../assets/js/jquery.cookie.js"></script>
 </head>
+<style>
+    table,
+    th,
+    td {
+        border: 1px solid black;
+    }
+</style>
 <body>
     <div id="tabs">
         <ul class="flex border-b">
@@ -24,38 +28,43 @@
                     href="#contact">Contact</a>
             </li>
             <li class="mr-1">
+                <a class="bg-white inline-block rounded-t py-2 px-4 text-blue-700 font-semibold" href="#chat">
+                    Obrolan</a>
+            </li>
+            <li class="mr-1">
                 <a class="bg-white inline-block rounded-t py-2 px-4 text-blue-700 font-semibold"
                     href="#setting">Setting</a>
             </li>
         </ul>
         <div id="profile">
-            <div class="rounded rounded-t-lg overflow-hidden shadow max-w-xs my-3">
-                <div class="text-center px-3 pb-6 pt-2">
-                    <h3 id="username"></h3>
-                    <p class="mt-2 font-sans font-light text-grey-dark" id="bio"></p>
-                </div>
-                <div class="flex justify-center pb-3 text-grey-dark">
-                    <div class="text-center mr-3 border-r pr-3">
-                        <h2>34</h2>
-                        <span>Photos</span>
-                    </div>
-                    <div class="text-center">
-                        <h2>42</h2>
-                        <span>Friends</span>
-                    </div>
+            <div class="md:flex bg-white rounded-lg p-6">
+                <div id="avatar"></div>
+                <div class="text-center md:text-left">
+                    <h2 class="text-lg" id="username"></h2>
+                    <div class="text-purple-500" id="bio"></div>
+                    <div class="text-gray-600" id="email"></div>
                 </div>
             </div>
         </div>
         <div id="contact">
-            <table id="listContact" class="display">
-                <thead>
+            <div class="md:flex bg-white rounded-lg p-6">
+                <table id="listContact">
                     <tr>
                         <td>Username</td>
                         <td>Action</td>
                     </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+                </table>
+            </div>
+        </div>
+        <div id="chat">
+            <div class="md:flex bg-white rounded-lg p-6">
+                <table id="listObrolan">
+                    <tr>
+                        <td>Username</td>
+                        <td>Action</td>
+                    </tr>
+                </table>
+            </div>
         </div>
         <div id="setting">
             <form id="logout">
@@ -68,46 +77,79 @@
     </div>
 </body>
 <script>
-    var url = "http://localhost:"
-    var port = "6969"
-    var prefix = "/api"
     $(document).ready(() => {
+        var url = "http://localhost:"
+        var port = "6969"
+        var prefix = "/api"
+        $.ajaxSetup({
+            headers: { 'Authorization': $.cookie('token') }
+        });
         $.ajax({
             type: 'GET',
             url: `${url}${port}${prefix}/users/me`,
             headers: { 'Authorization': $.cookie('token') },
             success: (data) => {
-                $('#username').append(data.name)
-                $('#bio').append(data.bio)
+                $('#username').append(data.user.username)
+                $('#bio').append(data.user.bio)
+                $('#email').append(data.user.email)
+                $('#avatar').append('<img class="h-16 w-16 md:h-24 md:w-24 rounded-full mx-auto md:mx-0 md:mr-6" src="' + data.user.avatar + '">')
             }
         })
         $.ajax({
             type: 'GET',
-            url: `${url}${port}${prefix}/users`,
+            url: `${url}${port}${prefix}/users/me/contact`,
             headers: { 'Authorization': $.cookie('token') },
             success: (data) => {
-                $.each(data, (a, b) => {
-                    console.log(b.name);
-                    for (let i = 0; i < b.length; i++) {
-                        $("#listContact tbody").append("<tr><td>" + b[i].name + "</td><td><button type='button' class='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'  >Chat</button></td>" + "</tr>")
+                for (let i = 0; i < data.contacts.length; i++) {
+                    const value = data.contacts[i].username
+                    const index = data.contacts[i]._id
+                    $("#listContact tbody").append('<tr><td>' + value
+                        + '</td><td><button class="btnChat" data-id="' + index + '" data-name="' + value + '">chat</button></td>"'
+                        + '</tr>')
+                    $('.btnChat').each(function () {
+                        var $this = $(this);
+                        $this.on("click", function () {
+                            let dataId = $(this).data('id')
+                            let dataUsername = $(this).data('name')
+                            $.post(`${url}${port}${prefix}/conversations/store`, { _id: dataId, username: dataUsername }).done((data) => {
+                                $(location).attr('href', "/chat");
+                            })
+                        });
+                    });
+                }
+            }
+        })
+        $.ajax({
+            type: 'GET',
+            url: `${url}${port}${prefix}/conversations`,
+            headers: { 'Authorization': $.cookie('token') },
+            success: (data) => {
+                $.get(`${url}${port}${prefix}/users/me`).done((value) => {
+                    let user = value.user.username;
+                    for (let i = 0; i < data.conversations.length; i++) {
+                        const value = data.conversations[i];
+                        for (let x = 0; x < data.conversations[i].participants.length; x++) {
+                            const element = data.conversations[i].participants[x].username;
+                            const id = data.conversations[i].participants[x]._id;
+                            if (user != element) {
+                                $("#listObrolan tbody").append('<tr><td>' + element
+                                    + '</td><td><button class="btnKlik" data-name="' + element + '"> klik!</button></td>"'
+                                    + '</tr>')
+                                $('.btnKlik').click((event) => {
+                                    window.open(`/chat/${value._id}`, '_blank')
+                                })
+                            }
+                        }
                     }
                 })
-                $("#listContact").DataTable();
             }
         })
         $(() => {
             $("#tabs").tabs();
         });
         $('#logout').submit((event) => {
-            $.ajax({
-                type: 'POST',
-                url: `${url}${port}${prefix}/users/logout`,
-                headers: { 'Authorization': $.cookie('token') },
-                success: () => {
-                    console.log("succes");
-                    $(location).attr('href', "/");
-                }
-            })
+            $.removeCookie("token")
+            $(location).attr('href', "/");
             event.preventDefault()
         })
     })

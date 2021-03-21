@@ -66,7 +66,9 @@ exports.show = async (req, res) => {
     user: {
       _id: req.user._id,
       username: req.user.username,
+      bio: req.user.bio,
       avatar: req.user.avatar,
+      email: req.user.email,
     },
   })
 }

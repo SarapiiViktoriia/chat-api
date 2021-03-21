@@ -55,7 +55,7 @@
             var email = $('#email').val()
             var password = $('#password').val()
             $.post(`${url}${port}${prefix}/users/login`, { email: email, password: password }).done((data) => {
-                $.cookie('token', data.users.token)
+                $.cookie('token', data.token)
                 $(location).attr('href', "/home");
             })
             event.preventDefault()

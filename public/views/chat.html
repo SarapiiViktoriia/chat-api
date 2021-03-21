@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../assets/css/output.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="../assets/js/jquery.cookie.js"></script>
+</head>
+<body>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font: 13px Helvetica, Arial;
+        }
+        form {
+            background: #000;
+            padding: 3px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        form input {
+            border: 0;
+            padding: 10px;
+            width: 90%;
+            margin-right: .5%;
+        }
+        form button {
+            width: 9%;
+            background: rgb(130, 224, 255);
+            border: none;
+            padding: 10px;
+        }
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        #messages li {
+            padding: 5px 10px;
+        }
+        #messages li:nth-child(odd) {
+            background: #eee;
+        }
+        .tagName {
+            background: #000;
+            padding: 10px;
+            position: fixed;
+            /* bottom: 0; */
+            width: 100%;
+        }
+    </style>
+    </head>
+    <body>
+        <h1 class="tagName text-white uppercase font-extrabold" id="username"></h1>
+        <ul id="messages"></ul>
+        <form action="">
+            <input id="m" autocomplete="off" /><button>Send</button>
+        </form>
+    </body>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io();
+    $(document).ready(() => {
+        var url = "http://localhost:"
+        var port = "6969"
+        var prefix = "/api"
+        $.ajaxSetup({
+            headers: { 'Authorization': $.cookie('token') }
+        });
+        $.ajax({
+            type: 'GET',
+            url: `${url}${port}${prefix}/users/me`,
+            headers: { 'Authorization': $.cookie('token') },
+            success: (data) => {
+                let user = data.user.username
+                let x = window.location.href
+                let getId = x.substring(x.lastIndexOf('/') + 1)
+                $.get(`${url}${port}${prefix}/conversations/${getId}`).done((value) => {
+                    let participants = value.conversation.participants
+                    // console.log(participants);
+                    $.each(participants, (key, value) => {
+                        if (user != value.username) {
+                            $('#username').append('@' + value.username)
+                        }
+                    })
+                })
+                $(() => {
+                    socket.emit('userJoined', user)
+                    socket.on('userJoined', (username) => {
+                        console.log(username + " Joined");
+                    })
+                })
+                $(() => {
+                    $('form').submit(function (e) {
+                        e.preventDefault();
+                        socket.emit('newMessage', $('#m').val());
+                        $('#m').val('');
+                        return false;
+                    });
+                    socket.on('newMessage', function (msg, user) {
+                        $('#messages').append($('<li>').text(username + ": " + msg));
+                        window.scrollTo(0, document.body.scrollHeight);
+                    });
+                });
+            }
+        })
+    })
+</script>
+</html>

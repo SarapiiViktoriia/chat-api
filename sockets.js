@@ -26,9 +26,12 @@ io.on('connection', (socket) => {
     socket.on('userJoined', (user) => {
         io.emit('userJoined', user);
     });
-    socket.on('newMessage', (msg, user) => {
-        io.emit('newMessage', msg);
-        console.log('newChat : ' +  msg);
+    socket.on('newMessage', (message, username) => {
+        io.emit('newMessage', {
+            username: username,
+            message: message
+        })
+        console.log("New message from " + username + " : " + message);
     })
     socket.on('disconnect', () => {
         console.log(`Socket ${socket.id} disconnected.`);

@@ -52,15 +52,21 @@
         .tagName {
             background: #000;
             padding: 10px;
-            position: fixed;
-            /* bottom: 0; */
             width: 100%;
         }
+        /* 
+        .listMsg {
+            margin-top: 20%;
+        } */
     </style>
     </head>
     <body>
-        <h1 class="tagName text-white uppercase font-extrabold" id="username"></h1>
-        <ul id="messages"></ul>
+        <div class="tagName">
+            <h1 class="text-white uppercase font-extrabold" id="username"></h1>
+        </div>
+        <div class="listMsg">
+            <ul id="messages"></ul>
+        </div>
         <form action="">
             <input id="m" autocomplete="off" /><button>Send</button>
         </form>
@@ -81,20 +87,20 @@
             url: `${url}${port}${prefix}/users/me`,
             headers: { 'Authorization': $.cookie('token') },
             success: (data) => {
-                let user = data.user.username
+                let username = data.user.username
                 let x = window.location.href
                 let getId = x.substring(x.lastIndexOf('/') + 1)
                 $.get(`${url}${port}${prefix}/conversations/${getId}`).done((value) => {
                     let participants = value.conversation.participants
                     // console.log(participants);
                     $.each(participants, (key, value) => {
-                        if (user != value.username) {
+                        if (username != value.username) {
                             $('#username').append('@' + value.username)
                         }
                     })
                 })
                 $(() => {
-                    socket.emit('userJoined', user)
+                    socket.emit('userJoined', username)
                     socket.on('userJoined', (username) => {
                         console.log(username + " Joined");
                     })
@@ -102,12 +108,15 @@
                 $(() => {
                     $('form').submit(function (e) {
                         e.preventDefault();
-                        socket.emit('newMessage', $('#m').val());
+                        let message = $('#m').val()
+                        socket.emit('newMessage',
+                            message, username
+                        );
                         $('#m').val('');
                         return false;
                     });
-                    socket.on('newMessage', function (msg, user) {
-                        $('#messages').append($('<li>').text(username + ": " + msg));
+                    socket.on('newMessage', function (data) {
+                        $('#messages').append($('<li>').text(data.username + ": " + data.message));
                         window.scrollTo(0, document.body.scrollHeight);
                     });
                 });

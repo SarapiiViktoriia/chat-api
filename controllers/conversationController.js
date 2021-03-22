@@ -36,7 +36,7 @@ exports.show = async (req, res) => {
       status: res.statusCode,
       success: true,
       messages: 'Success load data!',
-      conversation
+      conversation,
     })
   } catch (e) {
     res.status(500).send({

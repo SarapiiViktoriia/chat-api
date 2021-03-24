@@ -5,21 +5,36 @@ exports.store = async (req, res) => {
     const id = req.user._id,
       username = req.user.username,
       avatar = req.user.avatar
-    const conversation = new Conversation({
-      participants: [{ _id: id, username: username, avatar: avatar }, req.body],
-    })
-    await conversation.save()
-    const user = await User.findByIdAndUpdate(
-      { _id: req.user._id },
-      { $addToSet: { conversations: conversation._id } },
-      { new: true, safe: true, upsert: true },
-    )
-    res.status(201).send({
-      status: res.statusCode,
-      success: true,
-      messages: 'New conversation created!',
-      user,
-    })
+    const conversationData = await Conversation.findOne({
+      participants: { _id: req.body._id, username: req.body.username }
+    }).countDocuments()
+    if (conversationData === 1) {
+      res.status(201).send({
+        status: res.statusCode,
+        success: true,
+        messages: 'Conversation was available!',
+      })
+    } else {
+      const conversation = new Conversation({
+        participants: [{ _id: id, username: username, avatar: avatar }, req.body],
+      })
+      await conversation.save()
+      const userA = await User.findByIdAndUpdate(
+        { _id: req.user._id },
+        { $addToSet: { conversations: conversation._id } },
+        { new: true, safe: true, upsert: true },
+      )
+      const userB = await User.findByIdAndUpdate(
+        { _id: req.body._id },
+        { $addToSet: { conversations: conversation._id } },
+        { new: true, safe: true, upsert: true },
+      )
+      res.status(201).send({
+        status: res.statusCode,
+        success: true,
+        messages: 'New conversation created!',
+      })
+    }
   } catch (error) {
     res.status(400).send({
       status: res.statusCode,

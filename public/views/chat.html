@@ -76,7 +76,7 @@
 <script>
     var socket = io();
     $(document).ready(() => {
-        var url = "http://localhost:"
+        var url = "http://128.199.160.243:"
         var port = "6969"
         var prefix = "/api"
         $.ajaxSetup({
@@ -100,7 +100,7 @@
                     })
                 })
                 $(() => {
-                    socket.emit('userJoined', username)
+                    socket.emit('userJoined', "sdsad")
                     socket.on('userJoined', (username) => {
                         console.log(username + " Joined");
                     })

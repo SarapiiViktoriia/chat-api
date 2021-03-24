@@ -78,7 +78,7 @@
 </body>
 <script>
     $(document).ready(() => {
-        var url = "http://localhost:"
+        var url = "http://128.199.160.243:"
         var port = "6969"
         var prefix = "/api"
         $.ajaxSetup({
@@ -112,7 +112,8 @@
                             let dataId = $(this).data('id')
                             let dataUsername = $(this).data('name')
                             $.post(`${url}${port}${prefix}/conversations/store`, { _id: dataId, username: dataUsername }).done((data) => {
-                                $(location).attr('href', "/chat");
+                                // $(location).attr('href', "/chat");
+                                alert("succes!")
                             })
                         });
                     });

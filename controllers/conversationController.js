@@ -6,7 +6,7 @@ exports.store = async (req, res) => {
       username = req.user.username,
       avatar = req.user.avatar
     const conversationData = await Conversation.findOne({
-      participants: { _id: req.body._id, username: req.body.username }
+      participants: { _id: req.body._id, username: req.body.username },
     }).countDocuments()
     if (conversationData === 1) {
       res.status(201).send({
@@ -16,7 +16,10 @@ exports.store = async (req, res) => {
       })
     } else {
       const conversation = new Conversation({
-        participants: [{ _id: id, username: username, avatar: avatar }, req.body],
+        participants: [
+          { _id: id, username: username, avatar: avatar },
+          req.body,
+        ],
       })
       await conversation.save()
       const userA = await User.findByIdAndUpdate(

@@ -11,6 +11,7 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(express.static(__dirname + '/public'))
+const Message = require('./models/messageModel')
 const messageRouter = require('./routes/message')(app)
 app.get('/home', (req, res) => {
     res.sendFile(path.join(__dirname + '/public/views/index.html'))
@@ -24,17 +25,18 @@ app.get('/chat/:id', (req, res) => {
 io.on('connection', (socket) => {
     console.log(`Socket ${socket.id} connected.`);
     socket.on('userJoined', (user) => {
-        io.emit('userJoined', user);
-        console.log(user);
+        socket.broadcast.emit('userJoined', user);
+        console.log(user + " joined");
     });
-    socket.on('newMessage', (message, username) => {
+    socket.on('newMessage', (sender, content, conversationId) => {
         io.emit('newMessage', {
-            username: username,
-            message: message
+            sender: sender,
+            content: content,
+            conversationId: conversationId
         })
-        console.log("New message from " + username + " : " + message);
+        console.log("New message from " + sender + " : " + content)
     })
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (user) => {
         console.log(`Socket ${socket.id} disconnected.`);
     });
 })

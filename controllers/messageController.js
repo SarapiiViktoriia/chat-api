@@ -1,11 +1,21 @@
 const Message = require('../models/messageModel')
 exports.sendMessage = async (req, res) => {
-  var message = new Message(req.body)
-  message.save(err => {
-    if (err) sendStatus(500)
-    global.io.emit('message', req.body)
-    res.sendStatus(200)
-  })
+  try {
+    let message = new Message(req.body)
+    await message.save()
+    res.status(201).send({
+      status: res.statusCode,
+      success: true,
+      messages: 'New message sent!',
+    })
+  } catch (e) {
+    res.status(400).send({
+      status: res.statusCode,
+      success: false,
+      messages: 'Failed send Message!',
+    })
+    console.log(e);
+  }
 }
 exports.fetchMessage = async (req, res) => {
   Message.find({}, (err, messages) => {

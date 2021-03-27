@@ -1,12 +1,17 @@
 const mongoose = require('mongoose')
 const messageSchema = new mongoose.Schema(
   {
-    username: {
+    sender: {
       type: String,
       required: true,
       trim: true,
     },
-    message: {
+    content: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    conversationId: {
       type: String,
       required: true,
       trim: true,

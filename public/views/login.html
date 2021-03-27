@@ -47,7 +47,9 @@
     </div>
 </body>
 <script>
-    var url = "http://128.199.160.243:"
+    var urlData = window.location.host.toString()
+    var getUrl = urlData.substring(0, 10)
+    var url = `http://${getUrl}`
     var port = "6969"
     var prefix = "/api"
     $(document).ready(() => {

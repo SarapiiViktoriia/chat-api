@@ -76,7 +76,9 @@
 <script>
     var socket = io();
     $(document).ready(() => {
-        var url = "http://128.199.160.243:"
+        var urlData = window.location.host.toString()
+        var getUrl = urlData.substring(0, 10)
+        var url = `http://${getUrl}`
         var port = "6969"
         var prefix = "/api"
         $.ajaxSetup({
@@ -92,34 +94,48 @@
                 let getId = x.substring(x.lastIndexOf('/') + 1)
                 $.get(`${url}${port}${prefix}/conversations/${getId}`).done((value) => {
                     let participants = value.conversation.participants
-                    // console.log(participants);
+                    let conversationId = value.conversation._id
                     $.each(participants, (key, value) => {
                         if (username != value.username) {
                             $('#username').append('@' + value.username)
                         }
                     })
-                })
-                $(() => {
-                    socket.emit('userJoined', "sdsad")
-                    socket.on('userJoined', (username) => {
-                        console.log(username + " Joined");
+                    $(() => {
+                        socket.emit('userJoined', username)
+                        socket.on('userJoined', (username) => {
+                            // $('#messages').append($('<li>').text(username + " Joined"));
+                            console.log(username + " Joined");
+                        })
                     })
+                    $(() => {
+                        $.get(`${url}3001${prefix}/messages`, (data) => {
+                            console.log(data);
+                            $.each(data, (key, value) => {
+                                console.log(value);
+                                $('#messages').append($('<li>').text(value.sender + ": " + value.content));
+                            })
+                        })
+                        $('form').submit(function (e) {
+                            e.preventDefault();
+                            let content = $('#m').val()
+                            socket.emit('newMessage',
+                                username, content, conversationId
+                            );
+                            $.post(`${url}3001${prefix}/messages`, {
+                                sender: username,
+                                content: content,
+                                conversationId: conversationId
+                            })
+                            $('#m').val('');
+                            return false;
+                        });
+                        socket.on('newMessage', function (data) {
+                            console.log(data);
+                            $('#messages').append($('<li>').text(data.sender + ": " + data.content));
+                            window.scrollTo(0, document.body.scrollHeight);
+                        });
+                    });
                 })
-                $(() => {
-                    $('form').submit(function (e) {
-                        e.preventDefault();
-                        let message = $('#m').val()
-                        socket.emit('newMessage',
-                            message, username
-                        );
-                        $('#m').val('');
-                        return false;
-                    });
-                    socket.on('newMessage', function (data) {
-                        $('#messages').append($('<li>').text(data.username + ": " + data.message));
-                        window.scrollTo(0, document.body.scrollHeight);
-                    });
-                });
             }
         })
     })

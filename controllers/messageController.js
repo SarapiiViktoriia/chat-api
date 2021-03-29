@@ -14,7 +14,7 @@ exports.sendMessage = async (req, res) => {
       success: false,
       messages: 'Failed send Message!',
     })
-    console.log(e);
+    console.log(e)
   }
 }
 exports.fetchMessage = async (req, res) => {

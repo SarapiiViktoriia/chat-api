@@ -109,29 +109,30 @@
                     })
                     $(() => {
                         $.get(`${url}3001${prefix}/messages`, (data) => {
-                            console.log(data);
                             $.each(data, (key, value) => {
-                                console.log(value);
+                                // console.log(value);
                                 $('#messages').append($('<li>').text(value.sender + ": " + value.content));
                             })
                         })
                         $('form').submit(function (e) {
                             e.preventDefault();
                             let content = $('#m').val()
+                            let d = new Date();
+                            let getDate = `${d.getHours()}:${d.getMinutes()}`
                             socket.emit('newMessage',
-                                username, content, conversationId
+                                username, content, conversationId, getDate
                             );
-                            $.post(`${url}3001${prefix}/messages`, {
-                                sender: username,
-                                content: content,
-                                conversationId: conversationId
-                            })
+                            // $.post(`${url}3001${prefix}/messages`, {
+                            //     sender: username,
+                            //     content: content,
+                            //     conversationId: conversationId
+                            // })
                             $('#m').val('');
                             return false;
                         });
                         socket.on('newMessage', function (data) {
                             console.log(data);
-                            $('#messages').append($('<li>').text(data.sender + ": " + data.content));
+                            $('#messages').append($('<li>').text(data.sender + ": " + data.content ));
                             window.scrollTo(0, document.body.scrollHeight);
                         });
                     });

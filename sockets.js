@@ -28,13 +28,14 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('userJoined', user);
         console.log(user + " joined");
     });
-    socket.on('newMessage', (sender, content, conversationId) => {
+    socket.on('newMessage', (sender, content, conversationId, date) => {
         io.emit('newMessage', {
             sender: sender,
             content: content,
-            conversationId: conversationId
+            conversationId: conversationId,
+            date: date
         })
-        console.log("New message from " + sender + " : " + content)
+        console.log("New message from " + sender + " : " + content + date)
     })
     socket.on('disconnect', (user) => {
         console.log(`Socket ${socket.id} disconnected.`);

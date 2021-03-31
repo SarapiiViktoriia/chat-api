@@ -35,8 +35,19 @@ io.on('connection', (socket) => {
             conversationId: conversationId,
             date: date
         })
-        console.log("New message from " + sender + " : " + content + date)
+        console.log("New message from " + sender + " : " + content)
     })
+    socket.on('typing', (username) => {
+        socket.broadcast.emit('typing', {
+            username: username
+        });
+        console.log(username + " typing...");
+    });
+    socket.on('stop typing', (username) => {
+        socket.broadcast.emit('stop typing', {
+            username: username
+        });
+    });
     socket.on('disconnect', (user) => {
         console.log(`Socket ${socket.id} disconnected.`);
     });

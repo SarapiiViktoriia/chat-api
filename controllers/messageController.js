@@ -18,7 +18,7 @@ exports.sendMessage = async (req, res) => {
   }
 }
 exports.fetchMessage = async (req, res) => {
-  Message.find({}, (err, messages) => {
+  Message.find({ conversationId: req.params.id }, (err, messages) => {
     res.send(messages)
   })
 }

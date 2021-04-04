@@ -55,6 +55,12 @@ const userSchema = new Schema(
         ref: 'Conversation',
       },
     ],
+    groupChats: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'GroupChat',
+      },
+    ]
   },
   {
     timestamps: true,
@@ -62,7 +68,7 @@ const userSchema = new Schema(
   },
 )
 userSchema.plugin(timeZone, { paths: ['timestamps'] }, uniqueValidator)
-userSchema.methods.generateAuthToken = async function() {
+userSchema.methods.generateAuthToken = async function () {
   const user = this
   const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET)
   return token
@@ -78,7 +84,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
   }
   return user
 }
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   const user = this
   if (user.isModified('password')) {
     user.password = await bcrypt.hash(user.password, 6)

@@ -11,8 +11,6 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(express.static(__dirname + '/public'))
-const Message = require('./models/messageModel')
-const messageRouter = require('./routes/message')(app)
 app.get('/home', (req, res) => {
     res.sendFile(path.join(__dirname + '/public/views/index.html'))
 })

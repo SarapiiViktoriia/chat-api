@@ -9,7 +9,6 @@ exports.index = async (req, res) => {
       groupChat,
     })
   } catch (e) {
-    const error = e
     res.status(500).send({
       status: res.statusCode,
       success: false,
@@ -18,11 +17,19 @@ exports.index = async (req, res) => {
   }
 }
 exports.store = async (req, res) => {
-  const groupChat = new GroupChat(req.body)
   try {
-    await GroupChat.save()
-    res.status(201).send({ message: 'ok' })
+    const groupChat = new GroupChat(req.body)
+    await groupChat.save()
+    res.status(201).send({
+      status: res.statusCode,
+      success: true,
+      messages: 'New group created!',
+    })
   } catch (e) {
-    res.status(500).send(e)
+    res.status(500).send({
+      status: res.statusCode,
+      success: false,
+      messages: 'Server error!',
+    })
   }
 }

@@ -13,7 +13,7 @@ const groupChatSchema = new mongoose.Schema(
     },
     participants: {
       type: Array,
-      default: []
+      default: [],
     },
     avatar: {
       type: String,

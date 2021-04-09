@@ -9,11 +9,17 @@ const groupChatSchema = new mongoose.Schema(
     desc: {
       type: String,
       required: true,
+    },
+    userCreated: {
+      type: Object,
+      required: true,
       trim: true,
     },
     participants: {
       type: Array,
       default: [],
+      required: true,
+      trim: true,
     },
     avatar: {
       type: String,

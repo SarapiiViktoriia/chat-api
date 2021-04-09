@@ -18,7 +18,18 @@ exports.index = async (req, res) => {
 }
 exports.store = async (req, res) => {
   try {
-    const groupChat = new GroupChat(req.body)
+    const id = req.user._id,
+      username = req.user.username,
+      avatar = req.user.avatar
+    const userCreated = { _id: id, username: username, avatar: avatar }
+    const participants = req.body.participants
+    const participantsData = participants.concat(userCreated)
+    const groupChat = new GroupChat({
+      userCreated: userCreated,
+      participants: participantsData,
+      groupName: req.body.groupName,
+      desc: req.body.desc,
+    })
     await groupChat.save()
     res.status(201).send({
       status: res.statusCode,
@@ -26,6 +37,7 @@ exports.store = async (req, res) => {
       messages: 'New group created!',
     })
   } catch (e) {
+    console.log(e)
     res.status(500).send({
       status: res.statusCode,
       success: false,

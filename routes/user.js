@@ -5,7 +5,7 @@ const express = require('express'),
 app.post('/register', userController.register)
 app.post('/login', userController.login)
 app.get('/', authUser, userController.index)
-app.put('/:id', authUser, userController.update)
+app.put('/:id/update', authUser, userController.update)
 app.post('/getUser', authUser, userController.getUser)
 app.post('/:id/storeContact', authUser, userController.storeContact)
 app.get('/me', authUser, userController.show)

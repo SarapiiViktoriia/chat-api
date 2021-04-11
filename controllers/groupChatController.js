@@ -45,3 +45,15 @@ exports.store = async (req, res) => {
     })
   }
 }
+exports.update = async (req, res) => {
+  try {
+    await GroupChat.findByIdAndUpdate(req.params.id, { $set: req.body })
+    res.status(201).send({
+      status: res.statusCode,
+      success: true,
+      messages: 'Data Updated!',
+      data: req.body,
+    })
+  } catch (e) {
+  }
+}

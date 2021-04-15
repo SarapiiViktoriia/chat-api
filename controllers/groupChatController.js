@@ -8,7 +8,8 @@ exports.index = async (req, res) => {
       messages: 'Success load data!',
       groupChat,
     })
-  } catch (e) {
+  } catch (error) {
+    console.log(error);
     res.status(500).send({
       status: res.statusCode,
       success: false,
@@ -36,8 +37,8 @@ exports.store = async (req, res) => {
       success: true,
       messages: 'New group created!',
     })
-  } catch (e) {
-    console.log(e)
+  } catch (error) {
+    console.log(error)
     res.status(500).send({
       status: res.statusCode,
       success: false,
@@ -51,9 +52,31 @@ exports.update = async (req, res) => {
     res.status(201).send({
       status: res.statusCode,
       success: true,
-      messages: 'Data Updated!',
-      data: req.body,
+      messages: 'Data updated!',
     })
-  } catch (e) {
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({
+      status: res.statusCode,
+      success: false,
+      messages: 'Server error!',
+    })
+  }
+}
+exports.destroy = async (req, res)=> {
+  try {
+    await GroupChat.findByIdAndDelete(req.params.id)
+    res.send({
+      status: res.statusCode,
+      success: true,
+      messages: 'Data deleted!',
+    })
+  } catch (error) {
+    console.log(error);
+    res.send({
+      status: res.statusCode,
+      success: false,
+      messages: 'Server error!',
+    })
   }
 }

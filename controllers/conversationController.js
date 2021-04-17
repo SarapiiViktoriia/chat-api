@@ -9,7 +9,7 @@ exports.store = async (req, res) => {
       participants: { _id: req.body._id, username: req.body.username },
     }).countDocuments()
     if (conversationData === 1) {
-      res.status(201).send({
+      res.send({
         status: res.statusCode,
         success: true,
         messages: 'Conversation was available!',

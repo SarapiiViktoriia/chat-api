@@ -9,7 +9,7 @@ exports.index = async (req, res) => {
       groupChat,
     })
   } catch (error) {
-    console.log(error);
+    console.log(error)
     res.status(500).send({
       status: res.statusCode,
       success: false,
@@ -49,21 +49,38 @@ exports.store = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     await GroupChat.findByIdAndUpdate(req.params.id, { $set: req.body })
-    res.status(201).send({
+    res.send({
       status: res.statusCode,
       success: true,
       messages: 'Data updated!',
     })
   } catch (error) {
     console.log(error)
-    res.status(500).send({
+    res.send({
       status: res.statusCode,
       success: false,
       messages: 'Server error!',
     })
   }
 }
-exports.destroy = async (req, res)=> {
+exports.storeParticipants = async (req, res) => {
+  try {
+    await GroupChat.findByIdAndUpdate(req.params.id, { $push: { "participants": { $each: req.body.participants } } })
+    res.send({
+      status: res.statusCode,
+      success: true,
+      messages: 'New Participants added',
+    })
+  } catch (error) {
+    console.log(error)
+    res.send({
+      status: res.statusCode,
+      success: false,
+      messages: 'Server error!',
+    })
+  }
+}
+exports.destroy = async (req, res) => {
   try {
     await GroupChat.findByIdAndDelete(req.params.id)
     res.send({
@@ -72,7 +89,7 @@ exports.destroy = async (req, res)=> {
       messages: 'Data deleted!',
     })
   } catch (error) {
-    console.log(error);
+    console.log(error)
     res.send({
       status: res.statusCode,
       success: false,

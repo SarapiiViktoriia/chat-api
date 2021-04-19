@@ -65,7 +65,9 @@ exports.update = async (req, res) => {
 }
 exports.storeParticipants = async (req, res) => {
   try {
-    await GroupChat.findByIdAndUpdate(req.params.id, { $push: { "participants": { $each: req.body.participants } } })
+    await GroupChat.findByIdAndUpdate(req.params.id, {
+      $push: { participants: { $each: req.body.participants } },
+    })
     res.send({
       status: res.statusCode,
       success: true,

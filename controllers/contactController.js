@@ -3,12 +3,15 @@ const User = require('../models/userModel')
 exports.index = async (req, res) => {
     let ownerId = req.user._id
     try {
-        const contact = await Contact.findOne({ ownerId: ownerId }).populate({ path: 'listContacts', select: 'username avatar bio' })
+        const contact = await Contact.findOne({ ownerId: ownerId }).populate({
+            path: 'listContacts',
+            select: 'username avatar bio',
+        })
         res.status(200).send({
             status: res.statusCode,
             success: true,
             messages: 'Success load data!',
-            contact
+            contact,
         })
     } catch (error) {
         console.log(error)
@@ -23,7 +26,9 @@ exports.store = async (req, res) => {
     let listContacts = req.body.listContacts
     let ownerId = req.user._id
     try {
-        const findContactBook = await Contact.findOne({ ownerId: ownerId }).countDocuments()
+        const findContactBook = await Contact.findOne({
+            ownerId: ownerId,
+        }).countDocuments()
         const data = await Contact.findOne({ ownerId: ownerId })
         if (listContacts == ownerId) {
             res.status(200).send({
@@ -50,7 +55,7 @@ exports.store = async (req, res) => {
                 } else {
                     const contact = new Contact({
                         listContacts: listContacts,
-                        ownerId: ownerId
+                        ownerId: ownerId,
                     })
                     contact.save()
                 }
@@ -62,7 +67,7 @@ exports.store = async (req, res) => {
             }
         }
     } catch (error) {
-        console.log(error);
+        console.log(error)
         res.status(400).send({
             status: res.statusCode,
             success: false,
@@ -74,11 +79,11 @@ exports.destroy = async (req, res) => {
     let listContacts = req.params.idUser
     let ownerId = req.user._id
     try {
-        await Contact
-            .findOneAndUpdate(
-                { ownerId: ownerId },
-                { $pull: { listContacts: listContacts } },
-                { safe: true })
+        await Contact.findOneAndUpdate(
+            { ownerId: ownerId },
+            { $pull: { listContacts: listContacts } },
+            { safe: true },
+        )
         res.status(200).send({
             status: res.statusCode,
             success: true,

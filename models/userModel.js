@@ -39,18 +39,13 @@ const userSchema = new Schema(
     bio: {
       type: String,
       trim: true,
+      default: 'Available'
     },
     avatar: {
       type: String,
       trim: true,
       default: null,
     },
-    users: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-      },
-    ],
     conversations: [
       {
         type: Schema.Types.ObjectId,
@@ -67,7 +62,7 @@ const userSchema = new Schema(
   {
     timestamps: true,
     versionKey: false,
-  },
+  }
 )
 userSchema.plugin(timeZone, { paths: ['timestamps'] }, uniqueValidator)
 userSchema.methods.toJSON = function() {

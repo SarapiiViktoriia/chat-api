@@ -73,8 +73,8 @@ exports.show = async (req, res) => {
   })
 }
 exports.update = async (req, res) => {
-  await User.findByIdAndUpdate(req.params.id, { $set: req.body }, function (
-    err,
+  await User.findByIdAndUpdate(req.params.id, { $set: req.body }, function(
+    err
   ) {
     if (err) {
       res.send({
@@ -124,46 +124,17 @@ exports.getUser = async (req, res) => {
     })
   }
 }
-exports.indexContact = async (req, res) => {
-  res.send({
-    status: res.statusCode,
-    success: true,
-    messages: 'Success load data!',
-    contacts: req.user.contacts,
-  })
-}
-exports.storeContact = async (req, res) => {
-  const user = await User.findByIdAndUpdate(
-    { _id: req.params.id },
-    { $addToSet: { contacts: req.body } },
-    { new: true, safe: true, upsert: true },
-  )
-  try {
-    res.status(201).send({
-      status: res.statusCode,
-      success: true,
-      messages: 'New contact added!',
-    })
-  } catch (error) {
-    res.status(400).send({
-      status: res.statusCode,
-      success: false,
-      messages: 'Failed to add contact!',
-      error,
-    })
-  }
-}
 exports.uploadAvatar = async (req, res) => {
   const diskStorageToUploads = multer.diskStorage({
     destination: path.join('./public/uploads/avatar'),
     filename: (req, file, cb) => {
       cb(
         null,
-        file.fieldname + '-' + req.user._id + path.extname(file.originalname),
+        file.fieldname + '-' + req.user._id + path.extname(file.originalname)
       )
     },
   })
-  let fileFilter = function (req, file, cb) {
+  let fileFilter = function(req, file, cb) {
     var allowedMimes = ['image/jpeg', 'image/pjpeg', 'image/png']
     if (allowedMimes.includes(file.mimetype)) {
       cb(null, true)
@@ -174,7 +145,7 @@ exports.uploadAvatar = async (req, res) => {
           success: false,
           message: 'Invalid file type. Only jpg, png image files are allowed.',
         },
-        false,
+        false
       )
     }
   }
@@ -186,7 +157,7 @@ exports.uploadAvatar = async (req, res) => {
     fileFilter: fileFilter,
   })
   const upload = saveToUploads.single('avatar')
-  upload(req, res, function (error) {
+  upload(req, res, function(error) {
     if (error) {
       res.status(500)
       if (error.code == 'LIMIT_FILE_SIZE') {
@@ -209,7 +180,7 @@ exports.uploadAvatar = async (req, res) => {
       User.findByIdAndUpdate(
         req.user._id,
         { $set: { avatar: fileName } },
-        function (err) {
+        function(err) {
           if (res.status == 500) {
             console.log(err)
             res.send({ Message: 'Failed to Update Data!' })
@@ -221,7 +192,7 @@ exports.uploadAvatar = async (req, res) => {
               avatar: fileName,
             })
           }
-        },
+        }
       )
     }
   })

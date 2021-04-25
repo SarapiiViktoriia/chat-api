@@ -1,36 +1,39 @@
 const mongoose = require('mongoose')
-const groupChatSchema = new mongoose.Schema(
+const Schema = mongoose.Schema
+const groupChatSchema = new Schema(
   {
-    groupName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    desc: {
-      type: String,
-      required: true,
-    },
-    userCreated: {
-      type: Object,
-      required: true,
-      trim: true,
-    },
-    participants: {
-      type: Array,
-      default: [],
-      required: true,
-      trim: true,
-    },
     avatar: {
       type: String,
       trim: true,
       default: null,
     },
+    groupName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    description: {
+      type: String,
+      trim: true,
+      default: 'Awesome group'
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    participants: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     timestamps: true,
     versionKey: false,
-  },
+  }
 )
-const groupChat = mongoose.model('groupChat', groupChatSchema)
-module.exports = groupChat
+groupChatSchema.plugin(timeZone, { paths: ['timestamps'] }, uniqueValidator)
+const GroupChat = mongoose.model('GroupChat', groupChatSchema)
+module.exports = GroupChat

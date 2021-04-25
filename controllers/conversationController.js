@@ -1,4 +1,4 @@
-const Conversation = require('../models/conversationsModel')
+const Conversation = require('../models/conversationModel')
 const User = require('../models/userModel')
 exports.store = async (req, res) => {
   try {
@@ -25,12 +25,12 @@ exports.store = async (req, res) => {
       const userA = await User.findByIdAndUpdate(
         { _id: req.user._id },
         { $addToSet: { conversations: conversation._id } },
-        { new: true, safe: true, upsert: true },
+        { new: true, safe: true, upsert: true }
       )
       const userB = await User.findByIdAndUpdate(
         { _id: req.body._id },
         { $addToSet: { conversations: conversation._id } },
-        { new: true, safe: true, upsert: true },
+        { new: true, safe: true, upsert: true }
       )
       res.status(201).send({
         status: res.statusCode,
@@ -68,7 +68,7 @@ exports.show = async (req, res) => {
 exports.index = async (req, res) => {
   try {
     const user = await User.findById({ _id: req.user._id }).populate(
-      'conversations',
+      'conversations'
     )
     res.status(200).send({
       status: res.statusCode,

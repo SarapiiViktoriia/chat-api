@@ -8,7 +8,7 @@ app.put('/:id/update', authUser, roomChatController.update)
 app.put(
   '/:id/updateParticipants',
   authUser,
-  roomChatController.storeParticipants,
+  roomChatController.storeParticipants
 )
 app.delete('/:id/destroy', authUser, roomChatController.destroy)
 module.exports = app

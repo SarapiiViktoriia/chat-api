@@ -1,7 +1,14 @@
 const GroupChat = require('../models/groupChatModel')
-exports.index = async (req, res) => {
+exports.show = async (req, res) => {
+  let groupId = req.params.id
   try {
-    const groupChat = await GroupChat.find({})
+    const groupChat = await GroupChat.findOne({ _id: groupId }).populate({
+      path: 'participants',
+      select: 'username avatar bio'
+    }).populate({
+      path: 'createdBy',
+      select: 'username avatar bio'
+    })
     res.status(200).send({
       status: res.statusCode,
       success: true,
@@ -18,18 +25,18 @@ exports.index = async (req, res) => {
   }
 }
 exports.store = async (req, res) => {
+  let userId = req.user._id
+  let groupName = req.body.groupName
+  let description = req.body.description
   try {
-    const id = req.user._id,
-      username = req.user.username,
-      avatar = req.user.avatar
-    const userCreated = { _id: id, username: username, avatar: avatar }
+    const createdBy = userId
     const participants = req.body.participants
-    const participantsData = participants.concat(userCreated)
+    const participantsData = participants.concat(createdBy)
     const groupChat = new GroupChat({
-      userCreated: userCreated,
+      createdBy: createdBy,
       participants: participantsData,
-      groupName: req.body.groupName,
-      desc: req.body.desc,
+      groupName: groupName,
+      description: description,
     })
     await groupChat.save()
     res.status(201).send({

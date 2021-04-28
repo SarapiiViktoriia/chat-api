@@ -39,7 +39,7 @@ const userSchema = new Schema(
     bio: {
       type: String,
       trim: true,
-      default: 'Available'
+      default: 'Available',
     },
     avatar: {
       type: String,

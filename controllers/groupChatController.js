@@ -1,14 +1,43 @@
 const GroupChat = require('../models/groupChatModel')
+exports.index = async (req, res) => {
+  let userId = req.user.id
+  try {
+    const groupChat = await GroupChat.find({ participants: userId })
+      .populate({
+        path: 'participants',
+        select: 'username avatar about'
+      })
+      .populate({
+        path: 'createdBy',
+        select: 'username avatar about',
+      })
+    res.status(200).send({
+      status: res.statusCode,
+      success: true,
+      messages: 'Success load data!',
+      groupChat,
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({
+      status: res.statusCode,
+      success: false,
+      messages: 'Server error!',
+    })
+  }
+}
 exports.show = async (req, res) => {
   let groupId = req.params.id
   try {
-    const groupChat = await GroupChat.findOne({ _id: groupId }).populate({
-      path: 'participants',
-      select: 'username avatar bio'
-    }).populate({
-      path: 'createdBy',
-      select: 'username avatar bio'
-    })
+    const groupChat = await GroupChat.findOne({ _id: groupId })
+      .populate({
+        path: 'participants',
+        select: 'username avatar bio',
+      })
+      .populate({
+        path: 'createdBy',
+        select: 'username avatar bio',
+      })
     res.status(200).send({
       status: res.statusCode,
       success: true,

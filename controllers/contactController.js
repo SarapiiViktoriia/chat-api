@@ -5,7 +5,7 @@ exports.index = async (req, res) => {
   try {
     const contact = await Contact.findOne({ ownerId: ownerId }).populate({
       path: 'listContacts',
-      select: 'username avatar bio',
+      select: 'username avatar about',
     })
     res.status(200).send({
       status: res.statusCode,

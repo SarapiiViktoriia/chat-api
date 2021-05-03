@@ -5,7 +5,7 @@ exports.index = async (req, res) => {
     const groupChat = await GroupChat.find({ participants: userId })
       .populate({
         path: 'participants',
-        select: 'username avatar about'
+        select: 'username avatar about',
       })
       .populate({
         path: 'createdBy',

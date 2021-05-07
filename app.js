@@ -12,7 +12,7 @@ app.use('/api/contact', require('./routes/contact'))
 app.use('/api/conversations', require('./routes/conversation'))
 app.use('/api/messages', require('./routes/message'))
 app.use('/api/group', require('./routes/groupChat'))
-const port = 6969
+const port = 3000
 app.listen(port, () => {
   console.log(`Server is running in ${port}`)
 })

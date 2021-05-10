@@ -2,10 +2,11 @@ const User = require('../models/userModel')
 const multer = require('multer')
 const path = require('path')
 exports.register = async (req, res) => {
-  const user = new User(req.body)
-  const token = await user.generateAuthToken()
   try {
+    const user = new User(req.body)
+    const token = await user.generateAuthToken()
     await user.save()
+    const contact = await user.generateContactBook()
     res.status(201).send({
       status: res.statusCode,
       success: true,
@@ -13,11 +14,12 @@ exports.register = async (req, res) => {
       token: token,
     })
   } catch (error) {
+    console.log(error)
     res.status(400).send({
       status: res.statusCode,
       success: false,
       messages: 'Failed to register a new user!',
-      error
+      error,
     })
   }
 }
@@ -95,7 +97,7 @@ exports.index = async (req, res) => {
   }
 }
 exports.findUsername = async (req, res) => {
-  const username = req.params.username
+  const username = req.body.username
   try {
     const findUser = await User.findOne({ username })
     if (findUser) {
@@ -135,7 +137,7 @@ exports.uploadAvatar = async (req, res) => {
       )
     },
   })
-  let fileFilter = function (req, file, cb) {
+  let fileFilter = function(req, file, cb) {
     var allowedMimes = ['image/jpeg', 'image/pjpeg', 'image/png']
     if (allowedMimes.includes(file.mimetype)) {
       cb(null, true)
@@ -158,7 +160,7 @@ exports.uploadAvatar = async (req, res) => {
     fileFilter: fileFilter,
   })
   const upload = saveToUploads.single('avatar')
-  upload(req, res, function (error) {
+  upload(req, res, function(error) {
     if (error) {
       res.status(500)
       if (error.code == 'LIMIT_FILE_SIZE') {
@@ -181,7 +183,7 @@ exports.uploadAvatar = async (req, res) => {
       User.findByIdAndUpdate(
         req.user._id,
         { $set: { avatar: fileName } },
-        function (err) {
+        function(err) {
           if (res.status == 500) {
             console.log(err)
             res.send({ Message: 'Failed to Update Data!' })

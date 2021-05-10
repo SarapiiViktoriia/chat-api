@@ -23,49 +23,30 @@ exports.index = async (req, res) => {
   }
 }
 exports.store = async (req, res) => {
-  let listContacts = req.body.listContacts
+  let listContacts = req.body.userId
   let ownerId = req.user._id
   try {
     const findContactBook = await Contact.findOne({
       ownerId: ownerId,
     }).countDocuments()
-    const data = await Contact.findOne({ ownerId: ownerId })
-    if (listContacts == ownerId) {
-      res.status(200).send({
-        status: res.statusCode,
-        success: true,
-        messages: "You can't add yourself!",
-      })
+    if (findContactBook === 1) {
+      await Contact.findOneAndUpdate(
+        { ownerId: ownerId },
+        { $addToSet: { listContacts: listContacts } },
+        { new: true, safe: true, upsert: true }
+      )
     } else {
-      let contactArr = data.listContacts
-      let findContact = contactArr.indexOf(listContacts)
-      if (findContact >= 0) {
-        res.status(200).send({
-          status: res.statusCode,
-          success: true,
-          messages: 'Contact already exists!',
-        })
-      } else {
-        if (findContactBook === 1) {
-          await Contact.findOneAndUpdate(
-            { ownerId: ownerId },
-            { $addToSet: { listContacts: listContacts } },
-            { new: true, safe: true, upsert: true }
-          )
-        } else {
-          const contact = new Contact({
-            listContacts: listContacts,
-            ownerId: ownerId,
-          })
-          contact.save()
-        }
-        res.status(201).send({
-          status: res.statusCode,
-          success: true,
-          messages: 'New contact created!',
-        })
-      }
+      const contact = new Contact({
+        listContacts: listContacts,
+        ownerId: ownerId,
+      })
+      contact.save()
     }
+    res.status(201).send({
+      status: res.statusCode,
+      success: true,
+      messages: 'New contact created!',
+    })
   } catch (error) {
     console.log(error)
     res.status(400).send({
